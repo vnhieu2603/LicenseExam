@@ -10,7 +10,8 @@ namespace WebAPI.Controllers
     public class ExamController : ODataController
     {
         private readonly LicenseExamDBContext _context = new LicenseExamDBContext();
-        
+
+        [Authorize]
         [EnableQuery]
         public ActionResult Get()
         {

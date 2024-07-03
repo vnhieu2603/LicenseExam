@@ -16,21 +16,19 @@
                      class="img-fluid" alt="Sample image">
             </div>
             <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-                <form>
+                <form asp-action="Login" asp-controller="Login" method="post">
 
-                    <!-- Email input -->
                     <div data-mdb-input-init class="form-outline mb-4">
                         <label class="form-label" for="form3Example3">Email address</label>
 
-                        <input type="email" class="form-control form-control-lg"  name=""
-                               placeholder="Enter a valid email address" />
+                        <input type="text" class="form-control form-control-lg" name="Username" required
+                               placeholder="Enter username" />
                     </div>
-
-                    <!-- Password input -->
+                    <input type="text" name="Fullname" value="a" hidden />
                     <div data-mdb-input-init class="form-outline mb-3">
                         <label class="form-label" for="form3Example4">Password</label>
 
-                        <input type="password" id="form3Example4" class="form-control form-control-lg"
+                        <input type="password" id="form3Example4" class="form-control form-control-lg" name="Password" required
                                placeholder="Enter password" />
                     </div>
 
@@ -40,7 +38,7 @@
                     </div>
 
                     <div class="text-center text-lg-start mt-4 pt-2">
-                        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
+                        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
                                 style="padding-left: 2.5rem; padding-right: 2.5rem;">
                             Login
                         </button>
