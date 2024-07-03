@@ -11,30 +11,50 @@ namespace WebClient.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         
-        private readonly HttpClient _client;
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IHttpClientFactory _client;
+        public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
+            _client = httpClientFactory;
+
         }
 
-        public IActionResult Index()
+        //public IActionResult Index()
+        //{
+        //    var tokenResponseJson = HttpContext.Session.GetString("TokenResponse");
+        //    if (tokenResponseJson != null)
+        //    {
+        //        var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
+
+        //        Console.WriteLine("Home: " + tokenResponse.Token + " " + tokenResponse.acc.UserId);
+        //        return View();
+
+        //    }
+        //    else
+        //    {
+        //        return View("Unauthorized");
+        //    }
+
+        //}
+
+        public async Task<IActionResult> Index()
         {
-            var tokenResponseJson = HttpContext.Session.GetString("TokenResponse");
-            if (tokenResponseJson != null)
+            var client = _client.CreateClient();
+            var response = await client.GetAsync("http://localhost:5275/odata/Exam");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
-
-                Console.WriteLine("Home: " + tokenResponse.Token + " " + tokenResponse.acc.UserId);
-                return View();
-
+                return View("Unauthorized"); 
             }
-            else
-            {
-                return View("Unauthorized");
-            }
+            response.EnsureSuccessStatusCode();
 
+            var content = await response.Content.ReadAsStringAsync();
+            var odataResponse = JsonConvert.DeserializeObject<ODataResponse<Exam>>(content);
+            var examList = odataResponse.Value;
+            ViewBag.examList = examList;
+
+            return View(examList);
         }
-
 
 
         public IActionResult Privacy()

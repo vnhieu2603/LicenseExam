@@ -20,12 +20,6 @@ namespace WebClient.Controllers
             return View();
         }
 
-        public class TokenResponse
-        {
-            public string Token { get; set; }
-            public Account acc { get; set; }
-        }
-
         [HttpPost]
         public IActionResult Login(Account account)
         {
