@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Exam ";
+    var exam = ViewBag.exam as WebClient.Models.Exam;
+    var endTime = (DateTime)ViewBag.EndTime;
+}
+
+Day la trang detail của @exam.ExamId : @exam.Name
+
+<br></br>
+
+<p>Time remaining: <span id="timer">@endTime</span></p>
+
+<script>
+    //const endTime = new Date("@endTime.ToString("o")");
+
+    //function startTimer() {
+    //    const timerElement = document.getElementById("timer");
+
+    //    function updateTimer() {
+    //        const now = new Date();
+    //        const timeLeft = endTime - now;
+
+    //        if (timeLeft <= 0) {
+    //            timerElement.innerHTML = "Time's up!";
+    //            clearInterval(timerInterval);
+
+    //            setTimeout(function () {
+    //                window.location.href = '@Url.Action("Index", "Exam")';
+    //            }, 2000);
+    //        } else {
+    //            const minutes = Math.floor(timeLeft / 1000 / 60);
+    //            const seconds = Math.floor((timeLeft / 1000) % 60);
+    //            timerElement.innerHTML = `${minutes}m ${seconds}s`;
+    //        }
+    //    }
+
+    //    updateTimer();
+    //    const timerInterval = setInterval(updateTimer, 1000);
+    //}
+
+    //startTimer();
+</script>

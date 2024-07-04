@@ -14,12 +14,15 @@
             foreach (var exam in examList)
             {
                 <div class="col-md-3 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">@exam.Name</h5>
-                            <p class="card-text">Time: @exam.Time</p>
+                    <a href="@Url.Action("Details", "Exam", new { id = exam.ExamId })" class="text-decoration-none">
+                        <div class="card">
+                            <div class="card-body">
+                                <p>@exam.ExamId</p>
+                                <h5 class="card-title">@exam.Name</h5>
+                                <p class="card-text">Time: @exam.Time</p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             }
         }
