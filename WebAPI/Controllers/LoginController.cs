@@ -33,7 +33,7 @@ namespace WebAPI.Controllers
 
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"], _config["Jwt:Audience"], null,
-                expires: DateTime.Now.AddMinutes(1),
+                expires: DateTime.Now.AddHours(1),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

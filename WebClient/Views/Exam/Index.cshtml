@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Exam List";
+    var examList = ViewBag.examList as List<WebClient.Models.Exam>;
+}
+<style>
+    .card:hover {
+        cursor: pointer;
+    }
+</style>
+<div class="container mt-4">
+    <div class="row">
+        @if (examList != null)
+        {
+            foreach (var exam in examList)
+            {
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@exam.Name</h5>
+                            <p class="card-text">Time: @exam.Time</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

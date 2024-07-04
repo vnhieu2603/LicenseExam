@@ -42,10 +42,10 @@ namespace WebClient.Controllers
                     Console.WriteLine("sai cmnr");
 
                     List<string> errors = new List<string>();
-                    errors.Add("Email or password wrong");
+                    errors.Add("Username or password wrong");
                     ViewData["errors"] = errors;
 
-                    return RedirectToAction("Privacy", "Home");
+                    return View("Index");
 
 
                 }

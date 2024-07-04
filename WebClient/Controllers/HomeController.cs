@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using System.Net.Http.Headers;
 using System.Text;
 using WebClient.Models;
 using static WebClient.Controllers.LoginController;
@@ -40,20 +42,14 @@ namespace WebClient.Controllers
         public async Task<IActionResult> Index()
         {
             var client = _client.CreateClient();
-            var response = await client.GetAsync("http://localhost:5275/odata/Exam");
-
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                var tokenResponseJson = HttpContext.Session.GetString("TokenResponse");
+            if (tokenResponseJson != null)
             {
-                return View("Unauthorized"); 
+                var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
             }
-            response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
-            var odataResponse = JsonConvert.DeserializeObject<ODataResponse<Exam>>(content);
-            var examList = odataResponse.Value;
-            ViewBag.examList = examList;
-
-            return View(examList);
+            return View();
         }
 
 
