@@ -9,6 +9,14 @@
 </style>
 <div class="container mt-4">
     <div class="row">
+        <div class="mb-3">
+            <a href="@Url.Action("Index", "Home")" class="text-decoration-none d-flex align-items-center text-dark">
+                <i class="bi bi-arrow-left-short" style="font-size: 3rem;"></i>
+                <span class="ms-4 font-weight-bold">THI THỬ ĐỀ TẠO SẴN</span>
+            </a>
+        </div>
+    </div>
+    <div class="row">
         @if (examList != null)
         {
             foreach (var exam in examList)

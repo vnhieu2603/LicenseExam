@@ -1,15 +1,90 @@
 ﻿@{
     ViewBag.Title = "Exam ";
-    var exam = ViewBag.exam as WebClient.Models.Exam;
+    var exam = ViewBag.exam;
+    var questions = ViewBag.questions as List<WebClient.Models.Question>;
+
     var endTime = (DateTime)ViewBag.EndTime;
 }
 
-Day la trang detail của @exam.ExamId : @exam.Name
+<div class="row">
+    <div class="mb-3">
+        <a href="@Url.Action("Index", "Exam")" class="text-decoration-none d-flex align-items-center text-dark">
+            <i class="bi bi-arrow-left-short" style="font-size: 3rem;"></i>
+            <span class="ms-4 font-weight-bold">Day la trang detail của exam.ExamId : @exam.Name</span>
+        </a>
+    </div>
+</div>
+
 
 <br></br>
 
 <p>Time remaining: <span id="timer">@endTime</span></p>
 
+@*<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Questions and Answers</h2>
+            @foreach (var q in questions)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">@q.Text</h5>
+                        @foreach (var image in q.Images)
+                        {
+                            <img src="@image.Link" alt="Image for @q.Text" style="max-width: 100px; max-height: 100px;">
+                        }
+                        <div class="form-group">
+                            @foreach (var answer in q.Answers)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question_@q.QuestionId" id="answer_@answer.AnswerId">
+                                    <label class="form-check-label" for="answer_@answer.AnswerId">
+                                        @answer.AnswerText
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                        
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+*@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Questions and Answers</h2>
+            <form asp-controller="Exam" asp-action="SubmitAnswers" method="post">
+                @foreach (var q in questions)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">@q.Text</h5>
+                            @foreach (var image in q.Images)
+                            {
+                                <img src="@image.Link" alt="Image for @q.Text" style="max-width: 100px; max-height: 100px;">
+                            }
+                            <div class="form-group">
+                                @foreach (var answer in q.Answers)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="question_@q.QuestionId" value="@answer.AnswerId" required>
+                                        <label class="form-check-label" for="answer_@answer.AnswerId">
+                                            @answer.AnswerText
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
 <script>
     //const endTime = new Date("@endTime.ToString("o")");
 
