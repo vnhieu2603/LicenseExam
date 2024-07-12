@@ -40,7 +40,7 @@ namespace WebAPI.Models
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__account__1788CCAC7F5704C3");
+                    .HasName("PK__account__1788CCAC65AF3107");
 
                 entity.ToTable("account");
 
@@ -63,7 +63,7 @@ namespace WebAPI.Models
             modelBuilder.Entity<AccountExam>(entity =>
             {
                 entity.HasKey(e => e.UserExamId)
-                    .HasName("PK__AccountE__37688871A4EA21B6");
+                    .HasName("PK__AccountE__37688871CF6600E1");
 
                 entity.Property(e => e.UserExamId).HasColumnName("UserExamID");
 
@@ -112,7 +112,7 @@ namespace WebAPI.Models
                         r => r.HasOne<Exam>().WithMany().HasForeignKey("ExamId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__examQuest__ExamI__45F365D3"),
                         j =>
                         {
-                            j.HasKey("ExamId", "QuestionId").HasName("PK__examQues__F9A9275F167E8508");
+                            j.HasKey("ExamId", "QuestionId").HasName("PK__examQues__F9A9275FCA2EF1A3");
 
                             j.ToTable("examQuestions");
 
@@ -180,7 +180,7 @@ namespace WebAPI.Models
                         r => r.HasOne<Question>().WithMany().HasForeignKey("QuestionId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__questionI__Quest__4BAC3F29"),
                         j =>
                         {
-                            j.HasKey("QuestionId", "ImageId").HasName("PK__question__DA9100C21964C984");
+                            j.HasKey("QuestionId", "ImageId").HasName("PK__question__DA9100C2567AC69A");
 
                             j.ToTable("questionImage");
 
@@ -193,7 +193,7 @@ namespace WebAPI.Models
             modelBuilder.Entity<QuestionType>(entity =>
             {
                 entity.HasKey(e => e.TypeId)
-                    .HasName("PK__Question__516F0395EE876BE3");
+                    .HasName("PK__Question__516F0395FD6A4937");
 
                 entity.ToTable("QuestionType");
 

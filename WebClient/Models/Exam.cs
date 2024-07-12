@@ -12,6 +12,9 @@
         public string Name { get; set; } = null!;
         public int Time { get; set; }
 
+        public int Quantity { get; set; }
+        public int PassScore { get; set; }
+
         public virtual ICollection<AccountExam> AccountExams { get; set; }
 
         public virtual ICollection<Question> Questions { get; set; }

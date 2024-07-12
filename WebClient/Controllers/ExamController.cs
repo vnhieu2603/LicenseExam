@@ -78,7 +78,7 @@ namespace WebClient.Controllers
 
             var content2 = await response2.Content.ReadAsStringAsync();
             var questions = JsonConvert.DeserializeObject<List<Question>>(content2);
-            Console.WriteLine("answer of question 1: " + questions[2].Answers.ToList()[1].IsCorrect);
+            Console.WriteLine("answer of question 1: " + questions[0].Answers.ToList()[0].IsCorrect);
             ViewBag.questions = questions;
 
             int examDurationInMinutes = 1;

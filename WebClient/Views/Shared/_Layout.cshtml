@@ -1,4 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@inject IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+
+@{
+    var tokenResponseJson = HttpContextAccessor.HttpContext.Session.GetString("TokenResponse");
+    TokenResponse tokenResponse = null;
+    if (!string.IsNullOrEmpty(tokenResponseJson))
+    {
+        tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -27,10 +40,33 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                    <div class="ml-auto dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Welcome, @tokenResponse.acc.Fullname!
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#">Profile</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Settings</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider"> <!-- Dòng kẻ ngang -->
+                            </li>
+                            <li>
+                                <form asp-area="" asp-controller="Login" asp-action="Logout" method="post">
+                                    <button type="submit" class="dropdown-item text-danger">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
+
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

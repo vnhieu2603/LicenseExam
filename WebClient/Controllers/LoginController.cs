@@ -57,5 +57,13 @@ namespace WebClient.Controllers
             }
 
         }
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("TokenResponse");
+
+            return RedirectToAction("Index", "Login");
+        }
     }
 }

@@ -6,9 +6,16 @@
     var endTime = (DateTime)ViewBag.EndTime;
 }
 
+<style>
+    .answered {
+        background-color: #66645e; /* màu nền khi đã chọn đáp án */
+        border-color: #66645e; /* màu viền khi đã chọn đáp án */
+    }
+</style>
+
 <div class="row">
     <div class="mb-3">
-        <a href="@Url.Action("Index", "Exam")" class="text-decoration-none d-flex align-items-center text-dark">
+        <a href="@Url.Action("Index", "Exam")" class="text-decoration-none d-flex align-items-center text-dark" onclick="if (confirm('Dữ liệu sẽ không được lưu, bạn có muốn tiếp tục ?')) return true;">
             <i class="bi bi-arrow-left-short" style="font-size: 3rem;"></i>
             <span class="ms-4 font-weight-bold">Day la trang detail của exam.ExamId : @exam.Name</span>
         </a>
@@ -20,46 +27,14 @@
 
 <p>Time remaining: <span id="timer">@endTime</span></p>
 
-@*<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Questions and Answers</h2>
-            @foreach (var q in questions)
-            {
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">@q.Text</h5>
-                        @foreach (var image in q.Images)
-                        {
-                            <img src="@image.Link" alt="Image for @q.Text" style="max-width: 100px; max-height: 100px;">
-                        }
-                        <div class="form-group">
-                            @foreach (var answer in q.Answers)
-                            {
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="question_@q.QuestionId" id="answer_@answer.AnswerId">
-                                    <label class="form-check-label" for="answer_@answer.AnswerId">
-                                        @answer.AnswerText
-                                    </label>
-                                </div>
-                            }
-                        </div>
-                        
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-</div>
-*@
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-9">
             <h2>Questions and Answers</h2>
             <form asp-controller="Exam" asp-action="SubmitAnswers" method="post">
                 @foreach (var q in questions)
                 {
-                    <div class="card mb-3">
+                    <div class="card mb-3" id="question_@q.QuestionId">
                         <div class="card-body">
                             <h5 class="card-title">@q.Text</h5>
                             @foreach (var image in q.Images)
@@ -69,8 +44,8 @@
                             <div class="form-group">
                                 @foreach (var answer in q.Answers)
                                 {
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="question_@q.QuestionId" value="@answer.AnswerId" required>
+                                    <div class="form-check" >
+                                        <input class="form-check-input answer-radio" type="radio" name="question_@q.QuestionId" value="@answer.AnswerId" data-question-id="@q.QuestionId" required>
                                         <label class="form-check-label" for="answer_@answer.AnswerId">
                                             @answer.AnswerText
                                         </label>
@@ -83,9 +58,39 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
+        <div class="col-md-3">
+            <div class="sticky-top">
+            <h3>Question Numbers</h3>
+            <div class="row">
+                @for (int i = 0; i < questions.Count; i++)
+                {
+                    <div class="col-3 mb-2">
+                            <a href="#question_@questions[i].QuestionId" class="btn btn-light border" id="question-number-@questions[i].QuestionId" style="width: 100%;">
+                            @(i+1)
+                        </a>
+                    </div>
+                }
+            </div>
+            </div>
+        </div>
     </div>
 </div>
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var radios = document.querySelectorAll('.answer-radio');
+
+        radios.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                var questionId = this.getAttribute('data-question-id');
+                var questionNumberElement = document.getElementById('question-number-' + questionId);
+
+                if (this.checked) {
+                    questionNumberElement.classList.add('answered');
+                }
+            });
+        });
+    });
+
     //const endTime = new Date("@endTime.ToString("o")");
 
     //function startTimer() {
