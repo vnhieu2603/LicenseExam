@@ -18,20 +18,20 @@ namespace WebAPI.Controllers
         }
 
         //[Authorize]
-        //[HttpGet("odata/AnswerByQuestionID")]
-        //[EnableQuery]
-        //public async Task<IActionResult> GetAnswerByQuestionID([FromQuery] int question)
-        //{
-        //    var questions = await _context.Questions
-        //                        .Where(q => q.Exams.Any(e => e.ExamId == examId))
-        //                        .ToListAsync();
+        [HttpGet("odata/AnswerById")]
+        [EnableQuery]
+        public async Task<IActionResult> GetAnswerByQuestionID([FromQuery] int answerId)
+        {
+            var answers = await _context.Answers
+                                .Where(a => a.AnswerId == answerId)
+                                .FirstOrDefaultAsync();
 
-        //    if (questions == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (answers == null)
+            {
+                return NotFound();
+            }
 
-        //    return Ok(questions);
-        //}
+            return Ok(answers);
+        }
     }
 }

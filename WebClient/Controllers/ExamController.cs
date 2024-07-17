@@ -50,7 +50,6 @@ namespace WebClient.Controllers
                 var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
                 Console.WriteLine(tokenResponse.Token);
-
             }
             //Get exam
             var response = await client.GetAsync($"http://localhost:5275/odata/Exam({id})");
@@ -90,9 +89,13 @@ namespace WebClient.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitAnswers(IFormCollection form)
+        public async Task<IActionResult> SubmitAnswers(IFormCollection form, int examId)
         {
             var progresses = new List<Progress>();
+            var tokenResponseJson = HttpContext.Session.GetString("TokenResponse");
+            var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
+
+            Console.WriteLine("Lay duoc examId: " + examId + " va userId: " + tokenResponse.acc.UserId);
 
             foreach (var key in form.Keys)
             {
@@ -101,14 +104,23 @@ namespace WebClient.Controllers
                     int questionId = int.Parse(key.Split('_')[1]);
                     int answerId = int.Parse(form[key]);
 
-                    //var answer = await _context.Answers.FindAsync(answerId);
-                    //var isCorrect = answer != null && answer.IsCorrect;
+                    var client = _client.CreateClient();
+                    var response = await client.GetAsync($"http://localhost:5275/odata/AnswerById?answerId={answerId}");
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    {
+                        return RedirectToAction("Index", "Login");
+                    }
+                    response.EnsureSuccessStatusCode();
+
+                    var content = await response.Content.ReadAsStringAsync();
+                    var answer = JsonConvert.DeserializeObject<Answer>(content);
 
                     var progress = new Progress
                     {
                         QuestionId = questionId,
                         AnswerId = answerId,
-                        //IsCorrect = isCorrect
+                        IsCorrect = answer.IsCorrect
                     };
 
                     progresses.Add(progress);
@@ -117,7 +129,7 @@ namespace WebClient.Controllers
 
             foreach (var p in  progresses)
             {
-                Console.WriteLine("Cau hoi: " + p.QuestionId + "Dap an lua chon: " + p.AnswerId);
+                Console.WriteLine("Cau hoi: " + p.QuestionId + " Dap an lua chon: " + p.AnswerId + " Ket qua: " + p.IsCorrect);
 
             }
 

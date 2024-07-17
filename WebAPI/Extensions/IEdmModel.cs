@@ -11,6 +11,8 @@ namespace WebAPI.Extensions
             ODataConventionModelBuilder modelBuilder = new ODataConventionModelBuilder();
             modelBuilder.EntitySet<Exam>("Exam");
             modelBuilder.EntitySet<Question>("Question");
+            modelBuilder.EntitySet<Answer>("Answer");
+
 
 
             return modelBuilder.GetEdmModel();
