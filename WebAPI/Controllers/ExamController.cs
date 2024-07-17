@@ -8,39 +8,43 @@ using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
 using Microsoft.AspNetCore.OData.Routing;
 namespace WebAPI.Controllers
-{   
+{
+    [Route("api/[controller]")]
+    [ApiController]
+
     public class ExamController : ODataController
     {
         private readonly LicenseExamDBContext _context = new LicenseExamDBContext();
 
-        [Authorize]
+        //[Authorize]
+        [HttpGet("getAllExam")]
         [EnableQuery]
-        public ActionResult Get()
+        public IActionResult Get()
         {
-            return Ok(_context.Exams.AsQueryable());
+            return Ok(_context.Exams.ToList());
 
         }
 
         [EnableQuery]
-        public async Task<IActionResult> Get([FromODataUri] int key)
+        [HttpGet("getExamById")]
+
+        public async Task<IActionResult> Get([FromQuery] int key)
         {
             var exam = await _context.Exams
                             .Where(e => e.ExamId == key)
                             .FirstOrDefaultAsync();
-
+            Console.WriteLine("da lay dc exam id: " + key);
 
             if (exam == null)
             {
                 return NotFound();
             }
 
-            
-
             return Ok(exam);
         }
 
         [Authorize]
-        [HttpGet("odata/ExamByName")]
+        [HttpGet("getExamByName")]
         [EnableQuery]
         public async Task<IActionResult> GetExamByName([FromQuery] string name)
         {

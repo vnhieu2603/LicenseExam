@@ -7,18 +7,21 @@ using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class AnswerController : ODataController
     {
         private readonly LicenseExamDBContext _context = new LicenseExamDBContext();
 
         [EnableQuery]
+        [HttpGet("getAllAnswer")]
         public ActionResult Get()
         {
-            return Ok(_context.Answers.AsQueryable());
+            return Ok(_context.Answers.ToList());
         }
 
         //[Authorize]
-        [HttpGet("odata/AnswerById")]
+        [HttpGet("getAnswerById")]
         [EnableQuery]
         public async Task<IActionResult> GetAnswerByQuestionID([FromQuery] int answerId)
         {

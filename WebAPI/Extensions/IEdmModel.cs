@@ -12,6 +12,7 @@ namespace WebAPI.Extensions
             modelBuilder.EntitySet<Exam>("Exam");
             modelBuilder.EntitySet<Question>("Question");
             modelBuilder.EntitySet<Answer>("Answer");
+            modelBuilder.EntitySet<AccountExam>("ExamAccount");
 
 
 

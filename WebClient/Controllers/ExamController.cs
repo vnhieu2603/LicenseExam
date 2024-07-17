@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using WebClient.DTO;
 using WebClient.Models;
 
 namespace WebClient.Controllers
@@ -26,7 +27,7 @@ namespace WebClient.Controllers
                 var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
             }
-            var response = await client.GetAsync("http://localhost:5275/odata/Exam");
+            var response = await client.GetAsync("http://localhost:5275/api/Exam/getAllExam");
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
@@ -35,8 +36,7 @@ namespace WebClient.Controllers
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            var odataResponse = JsonConvert.DeserializeObject<ODataResponse<Exam>>(content);
-            var examList = odataResponse.Value;
+            var examList = JsonConvert.DeserializeObject<List<Exam>>(content);
             ViewBag.examList = examList;
             return View(examList);
         }
@@ -52,33 +52,49 @@ namespace WebClient.Controllers
                 Console.WriteLine(tokenResponse.Token);
             }
             //Get exam
-            var response = await client.GetAsync($"http://localhost:5275/odata/Exam({id})");
+            var response = await client.GetAsync($"http://localhost:5275/api/Exam/getExamById?key={id}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 return RedirectToAction("Index", "Login");
             }
-            response.EnsureSuccessStatusCode();
+            if(response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var exam = JsonConvert.DeserializeObject<Exam>(content);
+                Console.WriteLine("Exam: " + exam);
+                ViewBag.exam = exam;
+            } else
+            {
+                Console.WriteLine("call api fail");
+                return RedirectToAction("Index", "Exam");
 
-            var content = await response.Content.ReadAsStringAsync();
-            var exam = JsonConvert.DeserializeObject<Exam>(content);
-            ViewBag.exam = exam;
+            }
+
 
             //Get question
             var client2 = _client.CreateClient();
-            var response2 = await client2.GetAsync($"http://localhost:5275/odata/QuestionByExamID?examId={id}");
+            var response2 = await client2.GetAsync($"http://localhost:5275/api/Question/QuestionByExamID?examId={id}");
 
             if (response2.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 return RedirectToAction("Index", "Login");
             }
-            response2.EnsureSuccessStatusCode();
-            Console.Write("vcl chay vao day roi ma");
+            
+            
+            if(response2.IsSuccessStatusCode)
+            {
+                var content2 = await response2.Content.ReadAsStringAsync();
+                var questions = JsonConvert.DeserializeObject<List<QuestionDTO>>(content2);
+                ViewBag.questions = questions;
 
-            var content2 = await response2.Content.ReadAsStringAsync();
-            var questions = JsonConvert.DeserializeObject<List<Question>>(content2);
-            Console.WriteLine("answer of question 1: " + questions[0].Answers.ToList()[0].IsCorrect);
-            ViewBag.questions = questions;
+            }
+            else
+            {
+                Console.WriteLine("call api fail");
+                return RedirectToAction("Index", "Exam");
+
+            }
 
             int examDurationInMinutes = 1;
             DateTime endTime = DateTime.UtcNow.AddMinutes(examDurationInMinutes);
@@ -105,7 +121,7 @@ namespace WebClient.Controllers
                     int answerId = int.Parse(form[key]);
 
                     var client = _client.CreateClient();
-                    var response = await client.GetAsync($"http://localhost:5275/odata/AnswerById?answerId={answerId}");
+                    var response = await client.GetAsync($"http://localhost:5275/api/Answer/getAnswerById?answerId={answerId}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     {

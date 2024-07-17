@@ -25,11 +25,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Add services to the container.
 
-builder.Services.AddControllers()
-.AddOData(options => options.Select().Filter().Count().OrderBy().Expand().SetMaxTop(100)
-.AddRouteComponents("odata", IEdmModel.GetEdmModel()))
-.AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddControllers().AddOData(options =>
+{
+    options.Select().Filter().Count().OrderBy().Expand().SetMaxTop(100);
+    options.EnableQueryFeatures();
 
+});
 builder.Services.AddDbContext<LicenseExamDBContext>(
     optionsAction => optionsAction.UseSqlServer(builder.Configuration.GetConnectionString("value"))
 );
