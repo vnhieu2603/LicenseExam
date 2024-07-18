@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Exam List";
+    var examList = ViewBag.examList as List<WebClient.DTO.AccountExamDTO>;
+}
+<style>
+    .card:hover {
+        cursor: pointer;
+    }
+</style>
+<div class="container mt-4">
+    @*<div class="row">
+        <div class="mb-3">
+            <a href="@Url.Action("Index", "Home")" class="text-decoration-none d-flex align-items-center text-dark">
+                <i class="bi bi-arrow-left-short" style="font-size: 3rem;"></i>
+                <span class="ms-4 font-weight-bold">THI THỬ ĐỀ TẠO SẴN</span>
+            </a>
+        </div>
+    </div>*@
+    <div class="row">
+        @if (examList != null)
+        {
+            foreach (var exam in examList)
+            {
+                <div class="col-md-3 mb-3">
+                    <a href="@Url.Action("HistoryExamDetail", "Exam", new {userExamId = exam.UserExamId, examId = exam.ExamId })" class="text-decoration-none">
+                        <div class="card position-relative">
+                            <div class="card-body">
+                                @* <p>@exam.UserExamId</p> *@
+                                <h5 class="card-title">@exam.ExamName</h5>
+                                <p class="card-text">Điểm: @exam.Score / @exam.Quantity</p>
+                                @if (exam.Score >= exam.PassScore)
+                                {
+                                    <span class="badge bg-success position-absolute top-0 end-0">Pass</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger position-absolute top-0 end-0">Fail</span>
+                                }
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+    </div>
+</div>

@@ -26,8 +26,6 @@ namespace WebAPI.Controllers
                 _context.Progresses.Add(p);
                 await _context.SaveChangesAsync();
             }
-               
-
 
             return Ok();
         }

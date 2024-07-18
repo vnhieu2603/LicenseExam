@@ -1,0 +1,130 @@
+﻿@{
+    var exam = ViewBag.exam;
+    var questions = ViewBag.questions as List<WebClient.DTO.QuestionDTO>;
+    var progress = ViewBag.progress;
+    var userExam = ViewBag.userExam;
+}
+@functions {
+    public bool IsChecked(List<Progress> progresses, int questionId, int answerId)
+    {
+        return progresses.Any(p => p.QuestionId == questionId && p.AnswerId == answerId);
+    }
+    public string GetFormCheckClass(List<Progress> progresses, int questionId, WebClient.DTO.AnswerDTO answer)
+    {
+        var isChecked = progresses.Any(p => p.QuestionId == questionId && p.AnswerId == answer.AnswerId);
+        if (answer.IsCorrect)
+        {
+            return "form-check bg-success";
+        }
+        else if (isChecked)
+        {
+            return "form-check bg-danger";
+        }
+        else
+        {
+            return "form-check";
+        }
+    }
+
+    public string GetQuestionNumberClass(List<Progress> progresses, int questionId, ICollection<WebClient.DTO.AnswerDTO> answers)
+    {
+        var progress = progresses.FirstOrDefault(p => p.QuestionId == questionId);
+        if (progress != null)
+        {
+            var answer = answers.FirstOrDefault(a => a.AnswerId == progress.AnswerId);
+            if (answer != null)
+            {
+                if (answer.IsCorrect)
+                {
+                    return "btn-success";
+                }
+                else 
+                {
+                    return "btn-danger";
+                }
+            }
+        }
+        return "btn-light";
+    }
+}
+
+<style>
+    .form-check.bg-success {
+        background-color: #28a745 !important;
+    }
+
+    .form-check.bg-danger {
+        background-color: #dc3545 !important;
+    }
+</style>
+
+<div class="row">
+    <div class="mb-3">
+        <a href="@Url.Action("HistoryIndex", "Exam")" class="text-decoration-none d-flex align-items-center text-dark">
+            <i class="bi bi-arrow-left-short" style="font-size: 3rem;"></i>
+            <span class="ms-4 font-weight-bold">Day la trang detail của exam.ExamId : @exam.Name</span>
+        </a>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            <h2>Questions and Answers</h2>
+
+                @foreach (var q in questions)
+                {
+                <div class="card mb-3" id="question_@q.QuestionId">
+                    <div class="card-body">
+                        <h5 class="card-title">@q.Text</h5>
+                        @foreach (var image in q.Images)
+                        {
+                            <img src="@image.Link" alt="Image for @q.Text" style="max-width: 100px; max-height: 100px;">
+                        }
+                        <div class="form-group">
+                            @foreach (var answer in q.Answers)
+                            {
+                                var isChecked = IsChecked(progress, q.QuestionId, answer.AnswerId) ? "checked" : "";
+                                var formCheckClass = GetFormCheckClass(progress, q.QuestionId, answer);
+
+                                <div class="@formCheckClass">
+                                    <input class="form-check-input answer-radio" type="radio" name="question_@q.QuestionId" id="answer_@answer.AnswerId" @isChecked>
+                                    <label class="form-check-label" for="answer_@answer.AnswerId">
+                                        @answer.AnswerText
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+        </div>
+        <div class="col-md-3">
+            <div class="sticky-top">
+                <h3>Question Numbers</h3>
+                <div class="row">
+                    @for (int i = 0; i < questions.Count; i++)
+                    {
+                        var questionClass = GetQuestionNumberClass(progress, questions[i].QuestionId, questions[i].Answers);
+
+                        <div class="col-3 mb-2">
+                            <a href="#question_@questions[i].QuestionId" class="btn @questionClass border" id="question-number-@questions[i].QuestionId" style="width: 100%;">
+                                @(i + 1)
+                            </a>
+                        </div>
+                    }
+                </div>
+                <h5>Bạn làm đúng: @userExam.Score / @userExam.Quantity</h5>
+                <h5>Điểm cần đạt: @userExam.PassScore / @userExam.Quantity</h5>
+                @if (userExam.Score >= userExam.PassScore)
+                {
+                    <span class="badge bg-success p-2">Pass</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger p-2">Fail</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>

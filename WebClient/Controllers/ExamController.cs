@@ -118,9 +118,9 @@ namespace WebClient.Controllers
                 ExamId = examId
             };
 
+            //Add account exam
             var client2 = _client.CreateClient();
             var response2 = await client2.PostAsJsonAsync("http://localhost:5275/api/ExamAccount", ae);
-
             var aeId = 0;
             if (response2.IsSuccessStatusCode)
             {
@@ -130,6 +130,7 @@ namespace WebClient.Controllers
                 Console.WriteLine("aeId = " + aeId);
             }
 
+            var score = 0;
             foreach (var key in form.Keys)
             {
                 if (key.StartsWith("question_"))
@@ -148,7 +149,10 @@ namespace WebClient.Controllers
 
                     var content = await response.Content.ReadAsStringAsync();
                     var answer = JsonConvert.DeserializeObject<Answer>(content);
-
+                    if(answer.IsCorrect == true)
+                    {
+                        score++;
+                    }
                     var progress = new Progress
                     {
                         UserExamId = aeId,
@@ -161,12 +165,9 @@ namespace WebClient.Controllers
                 }
             }
 
-            foreach (var p in  progresses)
-            {
-                Console.WriteLine("Cau hoi: " + p.QuestionId + " Dap an lua chon: " + p.AnswerId + " Ket qua: " + p.IsCorrect);
-               
+            
 
-            }
+            //Add progress 
             var client3 = _client.CreateClient();
             var response3 = await client3.PostAsJsonAsync("http://localhost:5275/api/Progress", progresses);
 
@@ -180,7 +181,130 @@ namespace WebClient.Controllers
 
             }
 
-            return RedirectToAction("Index"); // Hoặc hành động khác tùy theo logic của bạn
+            //update exam score
+            AccountExam ae2 = new AccountExam
+            {
+                UserExamId = aeId,
+                Score = score,
+            };
+            var client4 = _client.CreateClient();
+            var response4 = await client4.PostAsJsonAsync("http://localhost:5275/api/ExamAccount/UpdateScore", ae2);
+
+            if (response4.IsSuccessStatusCode)
+            {
+                Console.WriteLine("update score thanh cong");
+            }
+            else
+            {
+                Console.WriteLine("update score that bai");
+
+            }
+
+            return RedirectToAction("HistoryExamDetail", new { userExamId = aeId, examId = examId });
+        }
+
+        public async Task<IActionResult> HistoryIndex()
+        {
+
+            var client = _client.CreateClient();
+            var tokenResponseJson = HttpContext.Session.GetString("TokenResponse");
+
+                var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
+            
+            var response = await client.GetAsync($"http://localhost:5275/api/ExamAccount/getExamByAccount?userId={tokenResponse.acc.UserId}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var examList = JsonConvert.DeserializeObject<List<AccountExamDTO>>(content);
+            ViewBag.examList = examList;
+            
+            return View();
+        }
+
+        public async Task<IActionResult> HistoryExamDetail(int userExamId, int examId)
+        {
+
+            var client = _client.CreateClient();
+            var tokenResponseJson = HttpContext.Session.GetString("TokenResponse");
+            if (tokenResponseJson != null)
+            {
+                var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
+                Console.WriteLine(tokenResponse.Token);
+            }
+            //Get exam
+            var response = await client.GetAsync($"http://localhost:5275/api/Exam/getExamById?key={examId}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var exam = JsonConvert.DeserializeObject<Exam>(content);
+                Console.WriteLine("Exam: " + exam);
+                ViewBag.exam = exam;
+            }
+            else
+            {
+                Console.WriteLine("call api fail");
+                return RedirectToAction("Index", "Exam");
+
+            }
+
+            //Get question
+            var client2 = _client.CreateClient();
+            var response2 = await client2.GetAsync($"http://localhost:5275/api/Question/QuestionByExamID?examId={examId}");
+            if (response2.IsSuccessStatusCode)
+            {
+                var content2 = await response2.Content.ReadAsStringAsync();
+                var questions = JsonConvert.DeserializeObject<List<QuestionDTO>>(content2);
+                ViewBag.questions = questions;
+
+            }
+            else
+            {
+                Console.WriteLine("call api fail");
+                return RedirectToAction("Index", "Exam");
+            }
+
+            //Get progress
+            var client3 = _client.CreateClient();
+            var response3 = await client3.GetAsync($"http://localhost:5275/api/Progress/getProgress?userExamId={userExamId}");
+            if (response3.IsSuccessStatusCode)
+            {
+                var content3 = await response3.Content.ReadAsStringAsync();
+                var progress = JsonConvert.DeserializeObject<List<Progress>>(content3);
+                ViewBag.progress = progress;
+            }
+            else
+            {
+                Console.WriteLine("call api fail");
+                return RedirectToAction("Index", "Exam");
+            }
+
+            //Get accountExam
+            var client4 = _client.CreateClient();
+            var response4 = await client4.GetAsync($"http://localhost:5275/api/ExamAccount/getExamByExamAccount?examAccountId={userExamId}");
+            if (response4.IsSuccessStatusCode)
+            {
+                var content4 = await response4.Content.ReadAsStringAsync();
+                var userExam = JsonConvert.DeserializeObject<AccountExamDTO>(content4);
+                ViewBag.userExam = userExam;
+            }
+            else
+            {
+                Console.WriteLine("call api fail");
+                return RedirectToAction("Index", "Exam");
+            }
+            return View();
         }
     }
 }
