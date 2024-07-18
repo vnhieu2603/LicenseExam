@@ -14,21 +14,20 @@ namespace WebAPI.Controllers
     {
         private readonly LicenseExamDBContext _context = new LicenseExamDBContext();
 
-        [EnableQuery]
         [HttpGet("getAllExamAccount")]
         public ActionResult Get()
         {
             return Ok(_context.AccountExams.ToList());
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Post([FromBody] AccountExam accountExam)
-        //{
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] AccountExam accountExam)
+        {
 
-        //    _context.AccountExams.Add(accountExam);
-        //    await _context.SaveChangesAsync();
+            _context.AccountExams.Add(accountExam);
+            await _context.SaveChangesAsync();
 
-        //    return Created(accountExam);
-        //}
+            return Ok(accountExam);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using WebClient.DTO;
 using WebClient.Models;
@@ -111,7 +112,23 @@ namespace WebClient.Controllers
             var tokenResponseJson = HttpContext.Session.GetString("TokenResponse");
             var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
 
-            Console.WriteLine("Lay duoc examId: " + examId + " va userId: " + tokenResponse.acc.UserId);
+            AccountExam ae = new AccountExam
+            {
+                UserId = tokenResponse.acc.UserId,
+                ExamId = examId
+            };
+
+            var client2 = _client.CreateClient();
+            var response2 = await client2.PostAsJsonAsync("http://localhost:5275/api/ExamAccount", ae);
+
+            var aeId = 0;
+            if (response2.IsSuccessStatusCode)
+            {
+                var createdAccountExam = await response2.Content.ReadAsStringAsync();
+                var accountExamObj = JsonConvert.DeserializeObject<AccountExam>(createdAccountExam);
+                aeId = accountExamObj.UserExamId;
+                Console.WriteLine("aeId = " + aeId);
+            }
 
             foreach (var key in form.Keys)
             {
@@ -134,6 +151,7 @@ namespace WebClient.Controllers
 
                     var progress = new Progress
                     {
+                        UserExamId = aeId,
                         QuestionId = questionId,
                         AnswerId = answerId,
                         IsCorrect = answer.IsCorrect
@@ -146,11 +164,21 @@ namespace WebClient.Controllers
             foreach (var p in  progresses)
             {
                 Console.WriteLine("Cau hoi: " + p.QuestionId + " Dap an lua chon: " + p.AnswerId + " Ket qua: " + p.IsCorrect);
+               
 
             }
+            var client3 = _client.CreateClient();
+            var response3 = await client3.PostAsJsonAsync("http://localhost:5275/api/Progress", progresses);
 
-            //_context.Progresses.AddRange(progresses);
-            //await _context.SaveChangesAsync();
+            if (response3.IsSuccessStatusCode)
+            {
+                Console.WriteLine("add progress thanh cong");
+            }
+            else
+            {
+                Console.WriteLine("add that bai");
+
+            }
 
             return RedirectToAction("Index"); // Hoặc hành động khác tùy theo logic của bạn
         }

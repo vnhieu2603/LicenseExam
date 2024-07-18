@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
-using WebAPI.Extensions;
+
 using WebAPI.Models;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
