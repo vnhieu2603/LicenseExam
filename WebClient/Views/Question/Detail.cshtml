@@ -1,0 +1,39 @@
+﻿@{
+    var questions = ViewBag.questions as WebClient.DTO.QuestionDTO;
+
+}
+
+<div class="container mt-4">
+    <h1>Update Question</h1>
+
+    <form asp-action="UpdateQuestion" method="post">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="QuestionText">Question Text</label>
+                    <input type="text" class="form-control" id="QuestionText" name="Text" value="@questions.Text" required>
+                </div>
+
+                @foreach (var image in questions.Images)
+                {
+                    <img src="@image.Link" style="max-width: 100px; max-height: 100px;">
+                }
+
+                <div class="form-group">
+                    <label for="Answers">Answers</label>
+                    @foreach (var answer in questions.Answers)
+                    {
+                        <div class="form-check">
+                            <input type="hidden" name="Answers[@answer.AnswerId].AnswerId" value="@answer.AnswerId">
+                            <input type="hidden" name="Answers[@answer.AnswerId].IsCorrect" value="@answer.IsCorrect">
+                            <input class="form-check-input" type="radio" name="selectedAnswer" value="@answer.AnswerId" @(answer.IsCorrect ? "checked" : "")>
+                            <input class="form-control" type="text" name="Answers[@answer.AnswerId].AnswerText" value="@answer.AnswerText" required>
+                        </div>
+                    }
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </div>
+    </form>
+</div>

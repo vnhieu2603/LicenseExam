@@ -19,10 +19,68 @@ namespace WebAPI.Controllers
         [EnableQuery]
         [HttpGet("getAllQuestion")]
 
-        public ActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            return Ok(_context.Questions.ToList());
+            var questions = await _context.Questions
+                                .Include(q => q.Images)
+                                .Include(q => q.Answers)
+                                .Select(q => new
+                                {
+                                    q.QuestionId,
+                                    q.Text,
+                                    q.IsCritical,
+                                    q.TypeId,
+                                    q.Images,
+                                    answers = _context.Answers.Where(a => a.QuestionId == q.QuestionId).Select(a => new AnswerDTO
+                                    {
+                                        AnswerId = a.AnswerId,
+                                        AnswerText = a.AnswerText,
+                                        IsCorrect = a.IsCorrect
+                                    }).ToList()
+                                })
+                                .ToListAsync();
+
+            if (questions == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(questions);
         }
+
+        [EnableQuery]
+        [HttpGet("getQuestionById")]
+
+        public async Task<IActionResult> GetQuestionById(int id)
+        {
+            var questions = await _context.Questions
+                                .Include(q => q.Images)
+                                .Include(q => q.Answers)
+                                .Where(q => q.QuestionId == id)
+                                .Select(q => new
+                                {
+                                    q.QuestionId,
+                                    q.Text,
+                                    q.IsCritical,
+                                    q.TypeId,
+                                    q.Images,
+                                    answers = _context.Answers.Where(a => a.QuestionId == q.QuestionId).Select(a => new AnswerDTO
+                                    {
+                                        AnswerId = a.AnswerId,
+                                        AnswerText = a.AnswerText,
+                                        IsCorrect = a.IsCorrect
+                                    }).ToList()
+                                })
+                                .FirstOrDefaultAsync();
+
+            if (questions == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(questions);
+        }
+
 
         public class AnswerDTO
         {
@@ -68,6 +126,16 @@ namespace WebAPI.Controllers
             }
 
             return Ok(questions);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] Question question)
+        {
+
+            _context.Questions.Add(question);
+            await _context.SaveChangesAsync();
+
+            return Ok(question);
         }
     }
 }

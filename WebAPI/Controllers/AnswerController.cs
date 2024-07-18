@@ -23,7 +23,7 @@ namespace WebAPI.Controllers
         //[Authorize]
         [HttpGet("getAnswerById")]
         [EnableQuery]
-        public async Task<IActionResult> GetAnswerByQuestionID([FromQuery] int answerId)
+        public async Task<IActionResult> GetAnswerByID([FromQuery] int answerId)
         {
             var answers = await _context.Answers
                                 .Where(a => a.AnswerId == answerId)
@@ -35,6 +35,34 @@ namespace WebAPI.Controllers
             }
 
             return Ok(answers);
+        }
+
+        [HttpGet("getAnswerByQuestionId")]
+        [EnableQuery]
+        public async Task<IActionResult> GetAnswerByQuestionID([FromQuery] int questionId)
+        {
+            var answers = await _context.Answers
+                                .Where(a => a.QuestionId == questionId)
+                                .ToListAsync();
+
+            if (answers == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(answers);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] List<Answer> answers)
+        {
+            foreach (var a in answers)
+            {
+                _context.Answers.Add(a);
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok();
         }
     }
 }

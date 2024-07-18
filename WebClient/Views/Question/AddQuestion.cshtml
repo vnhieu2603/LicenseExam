@@ -1,0 +1,56 @@
+﻿<form asp-action="AddQuestion" method="post">
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="form-group">
+                <label for="QuestionText">Question Text</label>
+                <input type="text" class="form-control" id="QuestionText" name="Text" placeholder="Nội dung câu hỏi" required>
+            </div>
+
+            <div class="form-group">
+                <label for="Answer1">Answer 1</label>
+                <input type="text" class="form-control answer-text" id="Answer1" name="answer1" placeholder="Đáp án 1" required>
+                <input type="radio" name="CorrectAnswerIndex" value="0" class="correct-answer"> Đúng
+            </div>
+
+            <div class="form-group">
+                <label for="Answer2">Answer 2</label>
+                <input type="text" class="form-control answer-text" id="Answer2" name="answer2" placeholder="Đáp án 2" required>
+                <input type="radio" name="CorrectAnswerIndex" value="1" class="correct-answer"> Đúng
+            </div>
+
+            <div class="form-group">
+                <label for="Answer3">Answer 3</label>
+                <input type="text" class="form-control answer-text" id="Answer3" name="answer3" placeholder="Đáp án 3">
+                <input type="radio" name="CorrectAnswerIndex" value="2" class="correct-answer"> Đúng
+            </div>
+
+            <div class="form-group">
+                <label for="Answer4">Answer 4</label>
+                <input type="text" class="form-control answer-text" id="Answer4" name="answer4" placeholder="Đáp án 4">
+                <input type="radio" name="CorrectAnswerIndex" value="3" class="correct-answer"> Đúng
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    // JavaScript để kiểm tra xem ít nhất một radio button đã được chọn hay chưa
+    $(document).ready(function () {
+        $('form').submit(function () {
+            var isChecked = false;
+            $('.correct-answer').each(function () {
+                if ($(this).is(':checked')) {
+                    isChecked = true;
+                    return false; // Thoát khỏi vòng lặp nếu đã có một radio button được chọn
+                }
+            });
+
+            if (!isChecked) {
+                alert('Bạn phải chọn ít nhất một đáp án là đúng.');
+                return false; // Ngăn form được gửi đi nếu không có radio button nào được chọn
+            }
+        });
+    });
+</script>

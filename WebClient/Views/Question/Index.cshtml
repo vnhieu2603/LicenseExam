@@ -1,0 +1,32 @@
+﻿@{
+    var questions = ViewBag.questions as List<WebClient.DTO.QuestionDTO>;
+
+}
+
+
+<div class="container mt-4">
+    <h1>Questions</h1>
+    <a href="@Url.Action("AddQuestion", "Question")" class="btn btn-primary">Add question</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Text</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var question in questions)
+            {
+                <tr>
+                    <td>@question.QuestionId</td>
+                    <td>@question.Text</td>
+                    <td>
+                        <a href="@Url.Action("Detail", "Question", new { id = question.QuestionId })" class="text-decoration-none"> Detail</a>
+                        <a asp-action="Delete" asp-route-id="@question.QuestionId" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
