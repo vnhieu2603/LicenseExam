@@ -64,5 +64,21 @@ namespace WebAPI.Controllers
 
             return Ok();
         }
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] List<Answer> answers)
+        {
+            foreach (var a in answers)
+            {
+                var existingAnswer = await _context.Answers.FindAsync(a.AnswerId);
+                existingAnswer.AnswerText = a.AnswerText;
+                existingAnswer.IsCorrect = a.IsCorrect;
+
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok();
+        }
+
     }
 }

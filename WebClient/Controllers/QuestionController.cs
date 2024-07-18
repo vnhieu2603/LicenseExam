@@ -136,5 +136,69 @@ namespace WebClient.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateQuestion(string questionid, string text, string answerId1, string answerId2, string answerId3, string answerId4,
+            string answer1, string answer2, string answer3, string answer4, int CorrectAnswerIndex)
+        {
+            //Update question 
+            Question updateQuestion = new Question
+            {
+                QuestionId = Int32.Parse(questionid),
+                Text = text,
+                //IsCritical = false,
+                //TypeId = 1
+            };
+            var client = _client.CreateClient();
+            var response = await client.PutAsJsonAsync("http://localhost:5275/api/Question", updateQuestion);
+            int questionId = 0;
+            if (response.IsSuccessStatusCode)
+            {
+                var createdQuestion = await response.Content.ReadAsStringAsync();
+                var question = JsonConvert.DeserializeObject<Question>(createdQuestion);
+                questionId = question.QuestionId;
+                Console.WriteLine("question vua update: " + question.Text);
+            }
+
+            //Update answer for question
+            List<Answer> answers = new List<Answer>();
+            answers.Add(new Answer {AnswerId = Int32.Parse(answerId1), AnswerText = answer1, IsCorrect = CorrectAnswerIndex == 0, QuestionId = questionId });
+            answers.Add(new Answer { AnswerId = Int32.Parse(answerId2), AnswerText = answer2, IsCorrect = CorrectAnswerIndex == 1, QuestionId = questionId });
+            if (!string.IsNullOrEmpty(answer3))
+            {
+                answers.Add(new Answer { AnswerId = Int32.Parse(answerId3), AnswerText = answer3, IsCorrect = CorrectAnswerIndex == 2, QuestionId = questionId });
+            }
+            if (!string.IsNullOrEmpty(answer4))
+            {
+                answers.Add(new Answer { AnswerId = Int32.Parse(answerId4), AnswerText = answer4, IsCorrect = CorrectAnswerIndex == 3, QuestionId = questionId });
+            }
+            var client2 = _client.CreateClient();
+            var response2 = await client2.PutAsJsonAsync("http://localhost:5275/api/Answer", answers);
+
+            if (response2.IsSuccessStatusCode)
+            {
+                Console.WriteLine("update answer thanh cong");
+            }
+            else
+            {
+                Console.WriteLine("update answer that bai");
+
+            }
+            Console.WriteLine("text: " + text);
+            Console.WriteLine("answerId1: " + answerId1);
+            Console.WriteLine("answerId2: " + answerId2);
+            Console.WriteLine("answerId3: " + answerId3);
+            Console.WriteLine("answerId4: " + answerId4);
+            Console.WriteLine("answer 1: " + answer1);
+            Console.WriteLine("answer 2: " + answer2);
+            Console.WriteLine("answer 3: " + answer3);
+            Console.WriteLine("answer 4: " + answer4);
+            Console.WriteLine("CorrectAnswerIndex" + CorrectAnswerIndex);
+
+
+
+            return RedirectToAction("Index", "Question");
+
+        }
+
     }
 }

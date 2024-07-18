@@ -128,14 +128,23 @@ namespace WebAPI.Controllers
             return Ok(questions);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Question question)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] Question question)
         {
+            var existingQuestion = await _context.Questions.FindAsync(question.QuestionId);
 
-            _context.Questions.Add(question);
+
+            if (existingQuestion == null)
+            {
+                return NotFound();
+            }
+
+            existingQuestion.Text = question.Text;
+            
+
             await _context.SaveChangesAsync();
 
-            return Ok(question);
+            return Ok(existingQuestion);
         }
     }
 }

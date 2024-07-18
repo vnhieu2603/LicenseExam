@@ -22,7 +22,7 @@
                     <td>@question.QuestionId</td>
                     <td>@question.Text</td>
                     <td>
-                        <a href="@Url.Action("Detail", "Question", new { id = question.QuestionId })" class="text-decoration-none"> Detail</a>
+                        <a href="@Url.Action("Detail", "Question", new { id = question.QuestionId })" class="btn btn-primary"> Detail</a>
                         <a asp-action="Delete" asp-route-id="@question.QuestionId" class="btn btn-danger btn-sm">Delete</a>
                     </td>
                 </tr>
