@@ -128,6 +128,16 @@ namespace WebAPI.Controllers
             return Ok(questions);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] Question question)
+        {
+            _context.Questions.Add(question);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(question);
+        }
+
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] Question question)
         {

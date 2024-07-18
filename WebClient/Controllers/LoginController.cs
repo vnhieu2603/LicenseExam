@@ -34,8 +34,15 @@ namespace WebClient.Controllers
                     string responseData = response.Content.ReadAsStringAsync().Result;
                     var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(responseData);
                     HttpContext.Session.SetString("TokenResponse", JsonConvert.SerializeObject(tokenResponse));
+                    if(tokenResponse.acc.RoleId == 2)
+                    {
+                        return RedirectToAction("Index", "Home");
 
-                    return RedirectToAction("Index", "Home");
+                    } else
+                    {
+                        return RedirectToAction("Index", "Question");
+
+                    }
                 }
                 else
                 {

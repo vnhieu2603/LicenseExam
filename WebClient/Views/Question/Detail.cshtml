@@ -38,6 +38,14 @@
                         <input type="radio" name="CorrectAnswerIndex" value="@i" class="correct-answer" @(questions.Answers.ToList()[i].IsCorrect ? "checked" : "")> Đúng
                     </div>
                 }
+                @for (int i = questions.Answers.Count; i < 4; i++)
+                {
+                    <div class="form-group">
+                        <label for="Answer@(i+1)">Answer @(i+1)</label>
+                        <input type="text" class="form-control answer-text" id="Answer@(i+1)" name="answer@(i+1)" placeholder="Đáp án @(i+1)">
+                        <input type="radio" name="CorrectAnswerIndex" value="@i" class="correct-answer"> Đúng
+                    </div>
+                }
 
                 <button type="submit" class="btn btn-primary">Update</button>
             </div>

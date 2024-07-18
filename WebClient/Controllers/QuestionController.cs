@@ -161,16 +161,28 @@ namespace WebClient.Controllers
 
             //Update answer for question
             List<Answer> answers = new List<Answer>();
+            List<Answer> newAnswers = new List<Answer>();
+
             answers.Add(new Answer {AnswerId = Int32.Parse(answerId1), AnswerText = answer1, IsCorrect = CorrectAnswerIndex == 0, QuestionId = questionId });
             answers.Add(new Answer { AnswerId = Int32.Parse(answerId2), AnswerText = answer2, IsCorrect = CorrectAnswerIndex == 1, QuestionId = questionId });
-            if (!string.IsNullOrEmpty(answer3))
+            
+            if (!string.IsNullOrEmpty(answerId3))
             {
                 answers.Add(new Answer { AnswerId = Int32.Parse(answerId3), AnswerText = answer3, IsCorrect = CorrectAnswerIndex == 2, QuestionId = questionId });
+            } else if(string.IsNullOrEmpty(answerId3) && !string.IsNullOrEmpty(answer3))
+            {
+                newAnswers.Add(new Answer { AnswerText = answer3, IsCorrect = CorrectAnswerIndex == 2, QuestionId = questionId });
             }
-            if (!string.IsNullOrEmpty(answer4))
+            if (!string.IsNullOrEmpty(answerId4))
             {
                 answers.Add(new Answer { AnswerId = Int32.Parse(answerId4), AnswerText = answer4, IsCorrect = CorrectAnswerIndex == 3, QuestionId = questionId });
             }
+            else if (string.IsNullOrEmpty(answerId4) && !string.IsNullOrEmpty(answer4))
+            {
+                newAnswers.Add(new Answer { AnswerText = answer4, IsCorrect = CorrectAnswerIndex == 3, QuestionId = questionId });
+            }
+
+            //update answer hien tai
             var client2 = _client.CreateClient();
             var response2 = await client2.PutAsJsonAsync("http://localhost:5275/api/Answer", answers);
 
@@ -183,6 +195,24 @@ namespace WebClient.Controllers
                 Console.WriteLine("update answer that bai");
 
             }
+            Console.WriteLine("new answers: " + newAnswers.Count());
+            //add answer neu them moi
+            if (newAnswers.Count() > 0)
+            {
+                var client3 = _client.CreateClient();
+                var response3 = await client3.PostAsJsonAsync("http://localhost:5275/api/Answer", newAnswers);
+
+                if (response3.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("add answer thanh cong");
+                }
+                else
+                {
+                    Console.WriteLine("add answer that bai");
+
+                }
+            }
+
             Console.WriteLine("text: " + text);
             Console.WriteLine("answerId1: " + answerId1);
             Console.WriteLine("answerId2: " + answerId2);
