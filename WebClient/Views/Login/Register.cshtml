@@ -16,31 +16,42 @@
                      class="img-fluid" alt="Sample image">
             </div>
             <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-                <h1>Login</h1>
-                <form asp-action="Login" asp-controller="Login" method="post">
+                <h1>Register</h1>
+                <form asp-action="Register" asp-controller="Login" method="post">
+                    <div data-mdb-input-init class="form-outline mb-3">
+                        <label class="form-label" >Full name</label>
 
+                        <input type="text" class="form-control form-control-lg" name="Fullname" required
+                               placeholder="Enter fullname" />
+                    </div>
                     <div data-mdb-input-init class="form-outline mb-4">
                         <label class="form-label" for="form3Example3">Email address</label>
 
                         <input type="text" class="form-control form-control-lg" name="Username" required
                                placeholder="Enter username" />
                     </div>
-                    <input type="text" name="Fullname" value="a" hidden />
+                    <input type="text" name="RoleId" value="2" hidden />
                     <div data-mdb-input-init class="form-outline mb-3">
                         <label class="form-label" for="form3Example4">Password</label>
 
                         <input type="password" id="form3Example4" class="form-control form-control-lg" name="Password" required
                                placeholder="Enter password" />
                     </div>
+                    <div data-mdb-input-init class="form-outline mb-3">
+                        <label class="form-label" >Password again</label>
+
+                        <input type="password" class="form-control form-control-lg" name="PasswordAgain" required
+                               placeholder="Enter password again" />
+                    </div>
 
                     <div class="text-center text-lg-start mt-4 pt-2">
                         <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
                                 style="padding-left: 2.5rem; padding-right: 2.5rem;">
-                            Login
+                            Register
                         </button>
                         <p class="small fw-bold mt-2 pt-1 mb-0">
-                            Don't have an account? <a asp-controller="Login" asp-action="Register"
-                                                      class="link-danger">Register</a>
+                            Already have an account? <a asp-controller ="Login" asp-action="Index"
+                                                      class="link-danger">Back to Login</a>
                         </p>
                     </div>
 

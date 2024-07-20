@@ -230,5 +230,60 @@ namespace WebClient.Controllers
 
         }
 
+        public async Task<IActionResult> Delete(int id)
+        {
+            //Get questions
+            var client = _client.CreateClient();
+            var response = await client.GetAsync($"http://localhost:5275/api/Question/getQuestionInExam?id={id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var questions = JsonConvert.DeserializeObject<List<Question>>(content);
+                if(questions.Count() > 0) {
+
+                }
+            }
+            else
+            {
+                Console.WriteLine("call api fail");
+                return RedirectToAction("Index", "Question");
+            }
+            return View();
+        }
+
+        public async Task<IActionResult> LearnAll()
+        {
+            var client = _client.CreateClient();
+            var tokenResponseJson = HttpContext.Session.GetString("TokenResponse");
+            if (tokenResponseJson != null)
+            {
+                var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(tokenResponseJson);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
+                Console.WriteLine(tokenResponse.Token);
+            }
+            //Get questions
+            var response = await client.GetAsync($"http://localhost:5275/api/Question/getAllQuestion");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var questions = JsonConvert.DeserializeObject<List<QuestionDTO>>(content);
+
+                ViewBag.questions = questions;
+            }
+            else
+            {
+                Console.WriteLine("call api fail");
+                return RedirectToAction("Index", "Exam");
+
+            }
+            return View();
+        }
+
     }
 }

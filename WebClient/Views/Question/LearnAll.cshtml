@@ -1,0 +1,46 @@
+﻿
+@{
+    var questions = ViewBag.questions as List<WebClient.DTO.QuestionDTO>;
+    var random = new Random();
+    var shuffledQuestions = questions.OrderBy(q => random.Next()).ToList();
+    var i = 1;
+}
+
+<div class="container mt-3">
+    @foreach (var question in shuffledQuestions)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Cau hoi @i: @question.Text</h5>
+                @{
+                    i++;
+                }
+                @foreach (var image in question.Images)
+                {
+                    <img src="@image.Link" alt="Image for @question.Text" style="max-width: 100px; max-height: 100px;">
+                }
+                <ul class="list-group">
+                    @foreach (var answer in question.Answers)
+                    {
+                        <label class="list-group-item answer-item" data-is-correct="@answer.IsCorrect">
+                            <input type="radio" name="question_@question.QuestionId" value="@answer.AnswerId" />
+                            @answer.AnswerText
+                        </label>
+                    }
+                </ul>
+                <button class="btn btn-primary mt-2 show-answer">Show Answer</button>
+            </div>
+        </div>
+    }
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.show-answer').click(function () {
+            var $card = $(this).closest('.card');
+            var $correctAnswer = $card.find('.answer-item[data-is-correct=True]');
+            $correctAnswer.toggleClass('list-group-item-success');
+        });
+    });
+</script>

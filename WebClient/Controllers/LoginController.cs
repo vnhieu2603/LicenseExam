@@ -72,5 +72,34 @@ namespace WebClient.Controllers
 
             return RedirectToAction("Index", "Login");
         }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(Account account, string PasswordAgain)
+        {
+            Console.WriteLine("password: " + account.Password + " password again: " + PasswordAgain);
+            if(!account.Password.Equals(PasswordAgain))
+            {
+                List<string> errors = new List<string>();
+                errors.Add("Password và password nhập lại không trùng khớp ");
+                ViewData["errors"] = errors;
+
+                return View();
+            }
+            string data = JsonConvert.SerializeObject(account);
+            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = _client.PostAsync("http://localhost:5275/api/Login/Register", content).Result;
+            Console.WriteLine(response);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Dang ki thanh cong");
+                return View("Index");
+            }
+            return View();
+        }
     }
 }

@@ -52,6 +52,8 @@ namespace WebClient.Controllers
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Token);
                 Console.WriteLine(tokenResponse.Token);
             }
+
+            int examDurationInMinutes = 1;
             //Get exam
             var response = await client.GetAsync($"http://localhost:5275/api/Exam/getExamById?key={id}");
 
@@ -63,6 +65,7 @@ namespace WebClient.Controllers
             {
                 var content = await response.Content.ReadAsStringAsync();
                 var exam = JsonConvert.DeserializeObject<Exam>(content);
+                examDurationInMinutes = exam.Time;
                 Console.WriteLine("Exam: " + exam);
                 ViewBag.exam = exam;
             } else
@@ -97,7 +100,6 @@ namespace WebClient.Controllers
 
             }
 
-            int examDurationInMinutes = 1;
             DateTime endTime = DateTime.UtcNow.AddMinutes(examDurationInMinutes);
 
             ViewBag.EndTime = endTime;
@@ -305,6 +307,92 @@ namespace WebClient.Controllers
                 return RedirectToAction("Index", "Exam");
             }
             return View();
+        }
+
+        public async Task<IActionResult> RandomExam()
+        {
+            //random name
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
+            string randomString = new string(Enumerable.Repeat(chars, 6)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+            string randomExamName = "Exam" +randomString;
+
+            //random quantity
+            var client = _client.CreateClient();
+            List<QuestionDTO> existquestions = new List<QuestionDTO>();
+            var response = await client.GetAsync($"http://localhost:5275/api/Question/getAllQuestion");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                existquestions = JsonConvert.DeserializeObject<List<QuestionDTO>>(content);
+            }
+            else
+            {
+                Console.WriteLine("call api fail");
+                return RedirectToAction("Index", "Exam");
+
+            }
+            
+            int randomQuantity = random.Next(3, existquestions.Count());
+            int passScore = randomQuantity - 1;
+            Console.WriteLine("Exam name: " + randomExamName);
+            Console.WriteLine("Question count: " + existquestions.Count());
+            Console.WriteLine("randomQuantity: " + randomQuantity);
+            Console.WriteLine("passScore: " + passScore);
+
+            //random question
+            List<int> shuffledQuestionIds = existquestions
+            .Select(q => q.QuestionId)
+            .OrderBy(x => random.Next())
+            .ToList();
+            List<int> randomQuestionIds = shuffledQuestionIds.Take(randomQuantity).ToList();
+            Console.WriteLine(randomQuestionIds.Count);
+
+            //create random  exam 
+            ExamDto newExam = new ExamDto
+            {
+                Name = randomExamName,
+                Time = 5,
+                Quantity = randomQuantity,
+                PassScore = passScore,
+                QuestionIds = randomQuestionIds
+            };
+            var client2 = _client.CreateClient();
+            var response2 = await client2.PostAsJsonAsync("http://localhost:5275/api/Exam/CreateExamWithQuestions", newExam);
+            var examId = 0;
+            if (response2.IsSuccessStatusCode)
+            {
+                var createdExam = await response2.Content.ReadAsStringAsync();
+                var ExamObj = JsonConvert.DeserializeObject<Exam>(createdExam);
+                examId = ExamObj.ExamId;
+                ViewBag.exam = ExamObj;
+
+                Console.WriteLine("examId = " + examId);
+            }
+
+            var client3 = _client.CreateClient();
+            var response3 = await client3.GetAsync($"http://localhost:5275/api/Question/QuestionByExamID?examId={examId}");
+
+
+            if (response3.IsSuccessStatusCode)
+            {
+                var content3 = await response3.Content.ReadAsStringAsync();
+                var questions = JsonConvert.DeserializeObject<List<QuestionDTO>>(content3);
+                ViewBag.questions = questions;
+
+            }
+            else
+            {
+                Console.WriteLine("call api fail");
+                return RedirectToAction("Index", "Exam");
+
+            }
+
+            DateTime endTime = DateTime.UtcNow.AddMinutes(5);
+
+            ViewBag.EndTime = endTime;
+            return View("Details");
         }
     }
 }

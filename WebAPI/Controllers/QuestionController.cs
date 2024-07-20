@@ -50,7 +50,6 @@ namespace WebAPI.Controllers
 
         [EnableQuery]
         [HttpGet("getQuestionById")]
-
         public async Task<IActionResult> GetQuestionById(int id)
         {
             var questions = await _context.Questions
@@ -81,6 +80,21 @@ namespace WebAPI.Controllers
             return Ok(questions);
         }
 
+        [EnableQuery]
+        [HttpGet("getQuestionInExam")]
+        public async Task<IActionResult> GetQuestionInExam(int id)
+        {
+            var examWithQuestion = await _context.Exams
+        .Where(e => e.Questions.Any(q => q.QuestionId == id))
+        .ToListAsync();
+
+            if (examWithQuestion == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(examWithQuestion);
+        }
 
         public class AnswerDTO
         {
@@ -155,6 +169,26 @@ namespace WebAPI.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(existingQuestion);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            var answers = await _context.Answers
+                                .Where(a => a.QuestionId == id)
+                                .ToListAsync();
+            _context.Answers.RemoveRange(answers);
+
+            var question = await _context.Questions.FindAsync(id);
+            if (question == null)
+            {
+                return NotFound();
+            }
+
+            _context.Questions.Remove(question);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

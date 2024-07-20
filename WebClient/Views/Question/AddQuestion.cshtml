@@ -44,20 +44,35 @@
 </form>
 
 <script>
-    // JavaScript để kiểm tra xem ít nhất một radio button đã được chọn hay chưa
     $(document).ready(function () {
+        function toggleRadioButtons() {
+            $('.answer-text').each(function (index) {
+                var isFilled = $(this).val().trim() !== '';
+                $('input[name="CorrectAnswerIndex"][value="' + index + '"]').prop('disabled', !isFilled);
+            });
+        }
+
+        // Initial check
+        toggleRadioButtons();
+
+        // On input change
+        $('.answer-text').on('input', function () {
+            toggleRadioButtons();
+        });
+
+        // On form submission
         $('form').submit(function () {
             var isChecked = false;
             $('.correct-answer').each(function () {
-                if ($(this).is(':checked')) {
+                if (!$(this).prop('disabled') && $(this).is(':checked')) {
                     isChecked = true;
-                    return false; // Thoát khỏi vòng lặp nếu đã có một radio button được chọn
+                    return false;
                 }
             });
 
             if (!isChecked) {
                 alert('Bạn phải chọn ít nhất một đáp án là đúng.');
-                return false; // Ngăn form được gửi đi nếu không có radio button nào được chọn
+                return false;
             }
         });
     });

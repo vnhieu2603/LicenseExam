@@ -11,12 +11,15 @@
     <div class="row">
         
         <div class="col-md-3 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Thi thử đề ngẫu nhiên</h5>
- 
+            <a href="@Url.Action("LearnAll", "Question")" class="text-decoration-none">
+                <div class="card">
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <i class="bi bi-journal-text" style="font-size: 2rem; color: #436fe8"></i>
+                        <h5 class="card-title mt-2" style="color: #436fe8">Ôn tập toàn bộ câu hỏi </h5>
+                    </div>
                 </div>
-            </div>
+            </a>
+
         </div>
         <div class="col-md-3 mb-3">
             <a href="@Url.Action("Index", "Exam")" class="text-decoration-none">
@@ -29,36 +32,15 @@
             </a>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Thi thử đề ngẫu nhiên</h5>
+            <a href="@Url.Action("RandomExam", "Exam")" class="text-decoration-none">
+                <div class="card">
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <i class="bi bi-shuffle" style="font-size: 2rem; color: #000000 "></i>
+                        <h5 class="card-title mt-2" style="color: #000000">Thi thử đề ngẫu nhiên </h5>
+                    </div>
+                </div>
+            </a>
+        </div>
 
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Thi thử đề ngẫu nhiên</h5>
- 
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Thi thử đề ngẫu nhiên</h5>
-
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Thi thử đề ngẫu nhiên</h5>
-
-                </div>
-            </div>
-        </div>
     </div>
 </div>

@@ -54,6 +54,16 @@ namespace WebAPI.Controllers
             return response;
         }
 
-        
+        [AllowAnonymous]
+        [HttpPost("Register")]
+        public IActionResult Register(Account account)
+        {
+
+            context.Accounts.Add(account);
+            context.SaveChanges();
+            return Ok(account);
+        }
+
+
     }
 }

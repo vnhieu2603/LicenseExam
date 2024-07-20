@@ -31,7 +31,7 @@
                 @for (int i = 0; i < questions.Answers.Count; i++)
                 {
                     <div class="form-group">
-                        <input type="hidden" class="form-control answer-text" name="answerId@(i+1)" value="@questions.Answers.ToList()[i].AnswerId">
+                        <input type="hidden" class="form-control" name="answerId@(i+1)" value="@questions.Answers.ToList()[i].AnswerId">
 
                         <label for="Answer@(i+1)">Answer @(i + 1)</label>
                         <input type="text" class="form-control answer-text" id="Answer@(i+1)" name="answer@(i+1)" value="@questions.Answers.ToList()[i].AnswerText">
@@ -52,3 +52,38 @@
         </div>
     </form>
 </div>
+
+<script>
+    $(document).ready(function () {
+        function toggleRadioButtons() {
+            $('.answer-text').each(function (index) {
+                var isFilled = $(this).val().trim() !== '';
+                $('input[name="CorrectAnswerIndex"][value="' + index + '"]').prop('disabled', !isFilled);
+            });
+        }
+
+        // Initial check
+        toggleRadioButtons();
+
+        // On input change
+        $('.answer-text').on('input', function () {
+            toggleRadioButtons();
+        });
+
+        // On form submission
+        $('form').submit(function () {
+            var isChecked = false;
+            $('.correct-answer').each(function () {
+                if (!$(this).prop('disabled') && $(this).is(':checked')) {
+                    isChecked = true;
+                    return false;
+                }
+            });
+
+            if (!isChecked) {
+                alert('Bạn phải chọn ít nhất một đáp án là đúng.');
+                return false;
+            }
+        });
+    });
+</script>

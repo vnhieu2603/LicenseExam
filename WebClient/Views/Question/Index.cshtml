@@ -23,10 +23,41 @@
                     <td>@question.Text</td>
                     <td>
                         <a href="@Url.Action("Detail", "Question", new { id = question.QuestionId })" class="btn btn-primary"> Detail</a>
-                        <a asp-action="Delete" asp-route-id="@question.QuestionId" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="javascript:void(0);" onclick="deleteQuestion(@question.QuestionId)" class="btn btn-danger">Delete</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+<script>
+    function deleteQuestion(questionId) {
+        if (confirm("Bạn có chắc chắn muốn xóa không ?")) {
+            $.ajax({
+                url: `http://localhost:5275/api/Question/getQuestionInExam`,
+                type: 'GET',
+                data: { id: questionId },
+                success: function (response) {
+                    if (response && response.length > 0) {
+                        alert("Câu hỏi này đang nằm trong 1 exam, không thể xóa");
+                    } else {
+                        $.ajax({
+                            url: `http://localhost:5275/api/Question/${questionId}`, 
+                            type: 'DELETE',
+                            success: function () {
+                                alert("Question deleted successfully.");
+                                location.reload(); 
+                            },
+                            error: function () {
+                                alert("Error deleting the question.");
+                            }
+                        });
+                    }
+                },
+                error: function () {
+                    alert("Error checking if the question is part of an exam.");
+                }
+            });
+        }
+    }
+</script>
